@@ -1,0 +1,7 @@
+1.- Define models
+2.- Make automatic test and create api rest functions
+2.1- Models and fields validation
+2.2- Validate permissions
+2.3 Validate coverage
+3.- Create a vue.js template with static scope
+4.- Make vue.js get content from api rest

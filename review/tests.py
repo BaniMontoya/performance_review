@@ -63,15 +63,19 @@ class TestCasePerformanceReview(APITestCase):
         ret_employee = self.client.get(f'/api/employee/{new_employee_id}/')
         self.assertEqual(ret_employee.data['results']['id'], 1)     
         
-        # update employee by id
+        # partial update employee by id
         data = {
-            "username": "employee1_changed",
             "first_name": "first1_changed",
             "last_name": "last1_changed"
         }
-        ret_employee = self.client.patch(f'/api/employee/{new_employee_id}/', data)
-        self.assertEqual(ret_employee.data['results']['id'], 1)     
-        
+        patch_employee = self.client.patch(f'/api/employee/{new_employee_id}/', data)
+        self.assertEqual(patch_employee.data['results']['id'], 1)     
+        # check if employee has changed first_name
+        patch_employee_first_name = patch_employee.data['results']['first_name']
+        self.assertEqual(patch_employee_first_name, "first1_changed")  
+        # check if employee has changed last_name
+        patch_employee_last_name = patch_employee.data['results']['last_name']
+        self.assertEqual(patch_employee_last_name, "last1_changed")
           
 
 

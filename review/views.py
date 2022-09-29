@@ -39,10 +39,23 @@ class EmployeeViewSet(ViewSet):
         else:
             return Response({"results": "User not exists"}, status=404)
 
-    def update(self, request, pk=None):
+    def partial_update(self, request, pk=None):
         data = request.data
 
-        return Response({"Message": "Error"}, status=400)
+        employee = review_models.Employee.objects.filter(id=pk).first()
+        if employee:
+            employee.user.first_name = data.get("first_name", employee.user.first_name)
+            employee.user.last_name = data.get("last_name", employee.user.last_name)
+            employee.user.save()
+            employee = review_models.Employee.objects.filter(id=pk).first()
+            return Response({
+                "results": {
+                    "id": employee.id,
+                    "first_name": employee.user.first_name,
+                    "last_name": employee.user.last_name
+                }}, status=200)
+        else:
+            return Response({"results": "User not exists"}, status=404)
 
     def destroy(self, request, pk=None):
         return Response({"Message": "Error"}, status=401)

@@ -4,7 +4,7 @@ from rest_framework.test import APITestCase
 
 from review import models as core_models
 
-class TestCasebooking(APITestCase):
+class TestCasePerformanceReview(APITestCase):
 
     def setup_user(self, name, email, is_admin):
         self.User_obj = get_user_model()
@@ -28,9 +28,9 @@ class TestCasebooking(APITestCase):
             "name": "employee0"
         }
 
-        # create employee as admin
+        # create employee as employee
         created_employee = self.client.post('/api/employee/', data)
-        # check if employee exists
+        # check if status_code is 403
         self.assertEqual(created_employee.status_code, 403)       
 
     def test_admin_can_manage_employees(self):
@@ -38,16 +38,41 @@ class TestCasebooking(APITestCase):
         # create admin user
         self.setup_user("admin", "admin@admin.com", True)
         data = {
-            "name": "employee1"
+            "username": "employee1",#TODO: check if this fields are saved on database by viewset
+            "first_name": "first1",
+            "last_name": "last1",
+            "password": "1234",
+            "email": "emplo@emplo.com"
         }
 
         # create employee as admin
         created_employee = self.client.post('/api/employee/', data)
         # check if employee exists
-        self.assertEqual(created_employee.data['results']['id'], 1)       
+        new_employee_id = created_employee.data['results']['id']
+        self.assertEqual(new_employee_id, 1)    
+        # check if employee has first_name
+        new_employee_first_name = created_employee.data['results']['first_name']
+        self.assertEqual(new_employee_first_name, "first1")  
+        # check if employee has last_name
+        new_employee_last_name = created_employee.data['results']['last_name']
+        self.assertEqual(new_employee_last_name, "last1")       
         # check if employee created is created by admin user
         self.assertEqual(core_models.Employee.objects.all().first().manager.username, "admin")
 
+        # retrieve employee by id
+        ret_employee = self.client.get(f'/api/employee/{new_employee_id}/')
+        self.assertEqual(ret_employee.data['results']['id'], 1)     
+        
+        # update employee by id
+        data = {
+            "username": "employee1_changed",
+            "first_name": "first1_changed",
+            "last_name": "last1_changed"
+        }
+        ret_employee = self.client.patch(f'/api/employee/{new_employee_id}/', data)
+        self.assertEqual(ret_employee.data['results']['id'], 1)     
+        
+          
 
 
 '''

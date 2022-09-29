@@ -77,7 +77,10 @@ class TestCasePerformanceReview(APITestCase):
         patch_employee_last_name = patch_employee.data['results']['last_name']
         self.assertEqual(patch_employee_last_name, "last1_changed")
           
-
+        # delete employee by id
+        self.assertEqual(core_models.Employee.objects.all().count(), 1)    
+        ret_employee = self.client.delete(f'/api/employee/{new_employee_id}/')
+        self.assertEqual(core_models.Employee.objects.all().count(), 0)    
 
 '''
 Admin view 

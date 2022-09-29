@@ -10,7 +10,7 @@ class EmployeeViewSet(ViewSet):
     permission_classes = (IsAdminUser,)
 
     def list(self, request):
-        return Response({"Message": "Error"}, status=400)
+        return Response({"Message": "Not implement function for Employee."}, status=400)
 
     def create(self, request):
         data = request.data
@@ -37,7 +37,7 @@ class EmployeeViewSet(ViewSet):
         if employee:
             return Response({"results": {"id": employee.id}}, status=200)
         else:
-            return Response({"results": "User not exists"}, status=404)
+            return Response({"results": "Employee not exists"}, status=404)
 
     def partial_update(self, request, pk=None):
         data = request.data
@@ -55,7 +55,12 @@ class EmployeeViewSet(ViewSet):
                     "last_name": employee.user.last_name
                 }}, status=200)
         else:
-            return Response({"results": "User not exists"}, status=404)
+            return Response({"results": "Employee not exists"}, status=404)
 
     def destroy(self, request, pk=None):
-        return Response({"Message": "Error"}, status=401)
+        employee = review_models.Employee.objects.filter(id=pk).first()
+        if employee:
+            employee.delete()
+            return Response({"results": {"id": employee.id}}, status=200)
+        else:
+            return Response({"results": "Employee not exists"}, status=404)

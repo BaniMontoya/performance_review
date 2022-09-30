@@ -10,7 +10,7 @@ class Employee(models.Model):
     creation_date = models.DateTimeField(default=timezone.now)
 
 class Review(models.Model):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="review_owner_user")
+    reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="review_reviewer_user")
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="employee_employee")
     rate = models.IntegerField(default=5)
     text = models.TextField()
@@ -22,3 +22,4 @@ class Feedback(models.Model):
     rate = models.IntegerField(default=5)
     text = models.TextField()
     creation_date = models.DateTimeField(default=timezone.now)
+

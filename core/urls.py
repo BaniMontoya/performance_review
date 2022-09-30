@@ -8,6 +8,8 @@ router = SimpleRouter()
 
 router.register(r'api/employee',
                 views.EmployeeViewSet, 'Employee')
+router.register(r'api/review',
+                views.ReviewViewSet, 'Review')
 
 urlpatterns = router.urls
 urlpatterns += [

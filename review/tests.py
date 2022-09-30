@@ -20,6 +20,9 @@ class TestCasePerformanceReview(APITestCase):
         self.client.defaults['HTTP_AUTHORIZATION'] = 'Token {}'.format(
             self.token.key)
         
+    '''
+    Admin view 
+    '''
     def test_employee_cant_manage_employees(self):
 
         # create admin user
@@ -35,6 +38,9 @@ class TestCasePerformanceReview(APITestCase):
 
     def test_admin_can_manage_employees(self):
 
+        '''
+        + Model Employee: Add/remove/update/view employees
+        '''
         # create admin user
         self.setup_user("admin", "admin@admin.com", True)
         data = {
@@ -80,20 +86,56 @@ class TestCasePerformanceReview(APITestCase):
         # delete employee by id
         self.assertEqual(core_models.Employee.objects.all().count(), 1)    
         ret_employee = self.client.delete(f'/api/employee/{new_employee_id}/')
-        self.assertEqual(core_models.Employee.objects.all().count(), 0)    
+        self.assertEqual(core_models.Employee.objects.all().count(), 0)
 
-'''
-Admin view 
+    def test_admin_can_manage_review(self):
+        '''
+        Add/update/view performance reviews 
+        + Review
 
-Add/remove/update/view employees
-+ Model Employee
+        + Assign employees to participate in another employee's performance review, !!??
+        '''
+        self.setup_user("admin2", "admin2@admin2.com", True)
+        # create employee for review test
+        data = {
+            "username": "employee1",#TODO: check if this fields are saved on database by viewset
+            "first_name": "first1",
+            "last_name": "last1",
+            "password": "1234",
+            "email": "emplo@emplo.com"
+        }
 
-Add/update/view performance reviews 
-+ Review
+        # create employee as admin2
+        created_employee = self.client.post('/api/employee/', data)
+        data = {
+            "employee_id": 1,
+            "rate": 5,
+            "text": "text text text text text text",
+        }
+        
+        # create review as admin2
+        created_review = self.client.post('/api/review/', data)
+        # check if review exists
+        new_review_id = created_review.data['results']['id']
+        self.assertEqual(new_review_id, 1) 
 
-+ Assign employees to participate in another employee's performance review 
-'''
+        # retrieve review by id
+        ret_review = self.client.get(f'/api/review/{new_review_id}/')
+        self.assertEqual(ret_review.data['results']['id'], 1)
 
+        # partial update review by id
+        data = {
+            "rate": 2,
+            "text": "Text changed"
+        }
+        patch_review = self.client.patch(f'/api/review/{new_review_id}/', data)
+        self.assertEqual(patch_review.data['results']['id'], 1)     
+        # check if review has changed first_name
+        patch_review_rate = patch_review.data['results']['rate']
+        self.assertEqual(patch_review_rate, 2)  
+        # check if review has changed last_name
+        patch_review_text = patch_review.data['results']['text']
+        self.assertEqual(patch_review_text, "Text changed")
 
 
 '''

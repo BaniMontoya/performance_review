@@ -35,8 +35,7 @@ class EmployeeViewSet(ViewSet):
 
     def retrieve(self, request, pk=None):
         
-        employee = review_models.Employee.objects.filter(id=pk).first()
-        if employee:
+        if employee := review_models.Employee.objects.filter(id=pk).first():
             return Response({"results": {"id": employee.id}}, status=200)
         else:
             return Response({"results": "Employee not exists"}, status=404)
@@ -44,8 +43,7 @@ class EmployeeViewSet(ViewSet):
     def partial_update(self, request, pk=None):
         
         data = request.data
-        employee = review_models.Employee.objects.filter(id=pk).first()
-        if employee:
+        if employee := review_models.Employee.objects.filter(id=pk).first():
             employee.user.first_name = data.get("first_name", employee.user.first_name)
             employee.user.last_name = data.get("last_name", employee.user.last_name)
             employee.user.save()
@@ -61,8 +59,7 @@ class EmployeeViewSet(ViewSet):
 
     def destroy(self, request, pk=None):
 
-        employee = review_models.Employee.objects.filter(id=pk).first()
-        if employee:
+        if employee := review_models.Employee.objects.filter(id=pk).first():
             employee.delete()
             return Response({"results": {"id": employee.id}}, status=200)
         else:
@@ -79,8 +76,7 @@ class ReviewViewSet(ViewSet):
     def create(self, request):
 
         data = request.data
-        employee = review_models.Employee.objects.filter(id=int(data.get("employee_id",0))).first()
-        if employee:
+        if employee := review_models.Employee.objects.filter(id=int(data.get("employee_id",0))).first():
             review = review_models.Review.objects.create(
                 reviewer=request.user, 
                 employee=employee,
@@ -99,8 +95,7 @@ class ReviewViewSet(ViewSet):
 
     def retrieve(self, request, pk=None):
         
-        review = review_models.Review.objects.filter(id=pk).first()
-        if review:
+        if review := review_models.Review.objects.filter(id=pk).first():
             return Response({"results": {"id": review.id}}, status=200)
         else:
             return Response({"results": "Employee not exists"}, status=404)
@@ -108,8 +103,7 @@ class ReviewViewSet(ViewSet):
     def partial_update(self, request, pk=None):
         
         data = request.data
-        review = review_models.Review.objects.filter(id=pk).first()
-        if review:
+        if review := review_models.Review.objects.filter(id=pk).first():
             review.rate = data.get("rate", review.rate)
             review.text = data.get("text", review.text)
             review.save()
